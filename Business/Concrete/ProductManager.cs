@@ -34,6 +34,13 @@ namespace Business.Concrete
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
+            //Encryption , Hashing
+            //MD5,SHA1
+            //Rainbow Table
+            //Salting
+            //Encrypt Decrypt
+            //Claim
+
             //business codes (Ürünün eklenmesi için gerekli olan şartlar.)            
             //validation
             //fluent validation
