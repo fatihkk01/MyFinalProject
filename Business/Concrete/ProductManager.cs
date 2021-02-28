@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Core.Utilities.Business;
+using Business.BusinessAspects.Autofac;
 
 namespace Business.Concrete
 {
@@ -30,7 +31,7 @@ namespace Business.Concrete
         }
 
 
-
+        [SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
@@ -74,7 +75,7 @@ namespace Business.Concrete
             //İş Kodları
             //Yetkisi var mı?
             //MaintenanceTime = Bakım Zamanı
-            if (DateTime.Now.Hour == 1)
+            if (DateTime.Now.Hour == 5)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
             }
