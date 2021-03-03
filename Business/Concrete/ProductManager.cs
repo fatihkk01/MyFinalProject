@@ -15,6 +15,9 @@ using System.Text;
 using System.Linq;
 using Core.Utilities.Business;
 using Business.BusinessAspects.Autofac;
+using Core.Aspects.Autofac.Caching;
+using System.Transactions;
+using Core.Aspects.Autofac.Transaction;
 
 namespace Business.Concrete
 {
@@ -33,6 +36,7 @@ namespace Business.Concrete
 
         [SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
         {
             //Encryption , Hashing
@@ -70,6 +74,9 @@ namespace Business.Concrete
             return new SuccessResult(Messages.ProductAdded);
         }
 
+        //Cache : Daha önceden yapılan işlemlerin bir sonraki çalıştırılmasında cache den yapılmasını sağlar.
+        //Key-Value : Key cache e verilen isim value ise cache nin değeri.
+        [CacheAspect]
         public IDataResult<List<Product>> GetAll()
         {
             //İş Kodları
@@ -89,6 +96,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
+        [CacheAspect]
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
@@ -105,6 +113,7 @@ namespace Business.Concrete
         }
 
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")] // Bellekteki tüm getleri iptal et
         public IResult Update(Product product)
         {
 
@@ -157,6 +166,32 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
+        //Nested Transaction araştır.
+        [TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            using(TransactionScope scope = new TransactionScope())
+            {
+                try
+                {
+                    Add(product);
+                    if (product.UnitPrice < 10)
+                    {
+                        throw new Exception();
+                    }
+                    Add(product);
+                    //Başarılı olursa scopeu complete et
+                    scope.Complete();
 
+                }
+                catch (Exception)
+                {
+                    //Başarısız olursa Dispose et
+                    scope.Dispose();
+                }
+            }
+            
+            return null;
+        }
     }
 }
