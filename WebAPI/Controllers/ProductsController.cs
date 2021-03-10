@@ -1,7 +1,7 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Threading;
 namespace WebAPI.Controllers
 {
     //Controller isimleri çoğul olur örn -> Products
@@ -27,7 +27,9 @@ namespace WebAPI.Controllers
         {
             //Swagger 
             //Dependency chain = Bağımlılık zinciri
-            
+
+            Thread.Sleep(5000);
+
             var result = _productService.GetAll();
             if (result.Success)
             {

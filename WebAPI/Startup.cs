@@ -45,7 +45,8 @@ namespace WebAPI
             //services.AddSingleton<IProductService,ProductManager>();
             //services.AddSingleton<IProductDal,EfProductDal>();
             //AddScoped : Her kullanýcýya bir instance daðýtýr.
-            
+
+            services.AddCors();
 
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
@@ -78,6 +79,9 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //WithOrigins() methodunun içine yazýlan urlden gelen isteklere izin vermemizi saðlar
+            app.UseCors(builder=>builder.WithOrigins("http://localhost:4200/").AllowAnyOrigin());
 
             app.UseHttpsRedirection();
 
