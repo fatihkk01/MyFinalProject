@@ -81,7 +81,11 @@ namespace WebAPI
             }
 
             //WithOrigins() methodunun içine yazýlan urlden gelen isteklere izin vermemizi saðlar
-            app.UseCors(builder=>builder.WithOrigins("http://localhost:4200/").AllowAnyOrigin());
+            //app.UseCors(builder=>builder.WithOrigins("http://localhost:4200/").AllowAnyOrigin());
+
+            app.ConfigureCustomExceptionMiddleware();
+
+            app.UseCors(builder => builder.AllowAnyHeader().AllowAnyOrigin());
 
             app.UseHttpsRedirection();
 
